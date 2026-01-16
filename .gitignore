@@ -7,7 +7,6 @@ admin/auth.php
 # Abaikan folder data yang berisi informasi user/produk asli
 data/user.json
 data/obat.json
-obat.json
 
 # --- ASSETS & UPLOADS ---
 # Mengabaikan folder gambar yang nantinya akan diisi lewat upload admin

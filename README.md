@@ -1,4 +1,3 @@
-
 ````markdown
 # 💊 Apotek Shabah - Digital Pharmacy System
 
@@ -85,6 +84,14 @@ Sistem menggunakan database relasional untuk menyimpan data:
 
 4.  **Jalankan Project**
     Pastikan web server (XAMPP/Laragon) aktif, lalu akses: `http://localhost/apotek_shabah`.
+
+## 🛠️ Cara Instalasi (Lanjutan)
+
+1.  **Impor Database**: Gunakan file `apotek_shabah.sql` yang tersedia dan impor ke MySQL Anda.
+2.  **Konfigurasi Koneksi**:
+    - Salin file `admin/db.php.example` menjadi `admin/db.php`.
+    - Buka `admin/db.php` dan masukkan password database lokal Anda.
+3.  **Akses Admin**: Buka `http://localhost/apotek_shabah/login.php` untuk masuk ke panel pengelola.
 
 ---
 
