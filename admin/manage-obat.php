@@ -34,6 +34,7 @@ $query = mysqli_query($conn, "SELECT * FROM obat ORDER BY nama ASC");
   <title>Kelola Stok - Apotek Shabah</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
 </head>
 
 <body class="bg-gray-100 flex">
@@ -42,6 +43,7 @@ $query = mysqli_query($conn, "SELECT * FROM obat ORDER BY nama ASC");
     <nav class="space-y-4">
       <a href="index.php" class="block py-2 px-4 hover:bg-emerald-700 rounded">Dashboard</a>
       <a href="manage-obat.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Kelola Stok</a>
+      <a href="logout.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Logout</a>
     </nav>
   </div>
 
@@ -97,6 +99,11 @@ $query = mysqli_query($conn, "SELECT * FROM obat ORDER BY nama ASC");
                 Rp <?php echo number_format($row['harga'], 0, ',', '.'); ?>
               </td>
               <td class="p-4 text-center">
+                <a href="edit-obat.php?id=<?php echo $row['id']; ?>"
+                  class="text-blue-500 hover:text-blue-700 transition mr-3">
+                  <i class="fas fa-edit"></i>
+                </a>
+
                 <a href="manage-obat.php?hapus=<?php echo $row['id']; ?>"
                   onclick="return confirm('Yakin ingin menghapus <?php echo $row['nama']; ?>?')"
                   class="text-red-500 hover:text-red-700 transition">
@@ -109,6 +116,11 @@ $query = mysqli_query($conn, "SELECT * FROM obat ORDER BY nama ASC");
       </table>
     </div>
   </div>
+  <!-- icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 
 </html>

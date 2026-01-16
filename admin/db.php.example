@@ -1,0 +1,18 @@
+<?php
+/**
+ * File: admin/db.php.example
+ * Salin file ini menjadi db.php dan sesuaikan konfigurasinya
+ */
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "db_apotek_shabah"; // Nama database Anda
+
+$conn = mysqli_connect($host, $user, $pass, $db);
+
+// Cek Koneksi
+if (!$conn) {
+    die("Koneksi database gagal: " . mysqli_connect_error());
+}
+?>

@@ -1,0 +1,25 @@
+# --- DATABASE & KEAMANAN ---
+admin/db.php
+admin/auth.php
+.env
+
+# --- DATA FILES (JSON) ---
+# Abaikan folder data yang berisi informasi user/produk asli
+data/user.json
+data/obat.json
+obat.json
+
+# --- ASSETS & UPLOADS ---
+# Mengabaikan folder gambar yang nantinya akan diisi lewat upload admin
+assets/img/products/
+assets/img/resep/
+
+# --- CATATAN & IDE ---
+note
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- LOGS ---
+*.log
+error_log

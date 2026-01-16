@@ -38,6 +38,19 @@ $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE st
     <nav class="space-y-4">
       <a href="index.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Dashboard</a>
       <a href="manage-obat.php" class="block py-2 px-4 hover:bg-emerald-700 rounded transition">Kelola Stok</a>
+      <div class="flex items-center gap-4">
+        <span class="text-slate-600 text-sm font-medium">
+          <i data-lucide="user" class="inline w-4 h-4 mr-1"></i>
+          <?php echo $_SESSION['admin_shabah']; ?>
+        </span>
+
+        <a href="logout.php"
+          onclick="return confirm('Apakah Anda yakin ingin keluar?')"
+          class="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-300 font-bold text-sm">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          Logout
+        </a>
+      </div>
     </nav>
   </div>
 
