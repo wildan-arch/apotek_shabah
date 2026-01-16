@@ -1,0 +1,23 @@
+APOTEK_SHABAH/
+│
+├── admin/                 <-- (BARU) Folder khusus Dashboard Admin
+│   ├── index.html         <-- Halaman utama dashboard
+│   ├── manage-obat.html   <-- Halaman tambah/edit stok
+│   ├── transaksi.html     <-- Halaman riwayat penjualan
+│   └── admin-script.js    <-- Logika khusus admin
+│
+├── assets/                <-- Folder untuk file pendukung
+│   ├── css/               <-- File style (style.css)
+│   ├── img/               <-- Logo, icon, dan foto produk
+│   └── js/                <-- Library pihak ketiga (jika ada)
+│
+├── data/                  <-- (BARU) Agar file data lebih aman
+│   ├── obat.json          <-- Database stok obat Anda
+│   └── users.json         <-- Data login admin/user
+│
+├── users/                 <-- Folder untuk halaman pembeli/customer
+│   └── (file user Anda)
+│
+├── index.html             <-- Halaman utama website (tampilan pembeli)
+├── script.js              <-- Logika utama website depan
+└── README.md
