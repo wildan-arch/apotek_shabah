@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include 'koneksi.php';
 include 'auth.php';
 
 // 1. Hitung Total Produk
@@ -36,13 +36,15 @@ $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE st
   <div class="w-64 h-screen bg-emerald-800 text-white p-6 sticky top-0">
     <h1 class="text-xl font-bold mb-8 italic">Apotek Shabah</h1>
     <nav class="space-y-4">
-      <a href="index.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Dashboard</a>
-      <a href="manage-obat.php" class="block py-2 px-4 hover:bg-emerald-700 rounded transition">Kelola Stok</a>
-      <div class="flex items-center gap-4">
-        <span class="text-slate-600 text-sm font-medium">
+      <div class="text">
+        <span class="text-slate-600 text-sm font-medium bg-white px-1 py-1 rounded">
           <i data-lucide="user" class="inline w-4 h-4 mr-1"></i>
           <?php echo $_SESSION['admin_shabah']; ?>
         </span>
+      </div>
+      <a href="index.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Dashboard</a>
+      <a href="manage-obat.php" class="block py-2 px-4 hover:bg-emerald-700 rounded transition">Kelola Stok</a>
+      <div class="flex items-center gap-4">
 
         <a href="logout.php"
           onclick="return confirm('Apakah Anda yakin ingin keluar?')"

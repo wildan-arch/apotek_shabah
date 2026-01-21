@@ -1,8 +1,8 @@
 <?php
 header("Content-Type: application/json");
-include 'db.php'; // Hubungkan ke database
+include 'koneksi.php'; // Hubungkan ke database
 
-$method = $_SERVER['REQUEST_METHOD'];
+$method = ($_SERVER['REQUEST_METHOD'];
 
 // 1. AMBIL DATA (GET)
 if ($method === 'GET') {

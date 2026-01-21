@@ -1,5 +1,5 @@
 <?php
-include 'admin/db.php';
+include 'admin/koneksi.php';
 // Ambil semua data obat untuk pencarian JavaScript nanti
 $query = mysqli_query($conn, "SELECT * FROM obat WHERE stok > 0 ORDER BY nama ASC");
 $semua_obat = [];
@@ -21,6 +21,22 @@ while ($row = mysqli_fetch_assoc($query)) {
   <style>
     body {
       font-family: "Poppins", sans-serif;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.3s ease-out;
     }
   </style>
 </head>
@@ -60,7 +76,8 @@ while ($row = mysqli_fetch_assoc($query)) {
         <p class="text-lg text-slate-600 leading-relaxed">Dapatkan obat asli, konsultasi gratis dengan apoteker profesional, dan layanan antar cepat langsung ke depan pintu rumah Anda.</p>
         <div class="flex flex-wrap gap-4">
           <a href="#produk" class="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-200">Cari Obat</a>
-          <a href="https://wa.me/6285745320912" class="bg-white border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition">Konsultasi Gratis</a>
+          <a href="https://wa.me/6285745320912" class="bg-white border-2 border-emerald-600 text-emerald-600 px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 transition">Konsultasi Apoteker Ahli</a>
+          >
         </div>
       </div>
       <div class="relative group">
@@ -134,6 +151,7 @@ while ($row = mysqli_fetch_assoc($query)) {
   <section id="produk" class="py-24 max-w-7xl mx-auto px-6 scroll-mt-20 text-center">
     <h3 class="text-emerald-600 font-bold uppercase tracking-widest text-sm mb-4">Katalog Kesehatan</h3>
     <h2 class="text-4xl font-bold mb-16">Kategori Terpopuler</h2>
+
     <!-- fitur pencarian -->
     <section class="py-16 bg-white shadow-inner">
       <div class="max-w-4xl mx-auto px-6">
@@ -143,7 +161,7 @@ while ($row = mysqli_fetch_assoc($query)) {
         </div>
 
         <div class="relative max-w-lg mx-auto mb-10">
-          <input type="text" id="inputCari" placeholder="Cari obat (contoh: Paracetamol)..." class="w-full px-6 py-4 rounded-full border-2 border-emerald-100 focus:border-emerald-500 outline-none transition shadow-sm pl-14" />
+          <input type="text" id="inputCari" placeholder="Cari obat (contoh: Paracetamol)..." autocomplete="off" class="w-full px-6 py-4 rounded-full border-2 border-emerald-100 focus:border-emerald-500 outline-none transition shadow-sm pl-14" />
           <i data-lucide="search" class="absolute left-5 top-4 text-emerald-500"></i>
         </div>
 
@@ -225,7 +243,7 @@ while ($row = mysqli_fetch_assoc($query)) {
           <i data-lucide="clock" class="text-emerald-600 mt-1"></i>
           <p>Senin - Minggu: 08:00 - 21:00 <br /><span class="text-sm font-medium text-emerald-600">Hari Libur Tetap Buka</span></p>
         </div>
-        <a href="#" class="inline-block bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 transition">Lihat di Google Maps</a>
+        <a href="https://maps.app.goo.gl/pAaA76RhM1aGPqJg9" target="_blank" rel="noopener" class="inline-block bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 transition">Lihat di Google Maps</a>
       </div>
       <div class="bg-emerald-600 p-10 rounded-3xl text-white shadow-xl shadow-emerald-200">
         <i data-lucide="file-text" class="w-12 h-12 mb-6"></i>
@@ -239,6 +257,53 @@ while ($row = mysqli_fetch_assoc($query)) {
   <footer class="py-12 border-t text-center text-slate-400 text-sm">
     <p>© 2024 <span class="font-bold text-slate-600">Apotek Shabah</span>. Melayani dengan Sepenuh Hati.</p>
   </footer>
+
+  <!-- fitur detail obat -->
+  <div id="modalDetail" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60] hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-emerald-50">
+        <h2 id="modalNamaObat" class="text-2xl font-bold text-emerald-800 italic">Nama Obat</h2>
+        <button onclick="tutupModal()" class="p-2 hover:bg-emerald-100 rounded-full transition">
+          <i data-lucide="x" class="text-emerald-800"></i>
+        </button>
+      </div>
+
+      <div class="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+        <div class="flex justify-between items-center">
+          <span id="modalKategori" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider italic">Kategori</span>
+          <span id="modalHarga" class="text-2xl font-mono font-bold text-emerald-600">Rp 0</span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="info" class="w-4 h-4 text-emerald-600"></i> Deskripsi
+            </h3>
+            <p id="modalDeskripsi" class="text-slate-600 text-sm leading-relaxed mt-1">-</p>
+          </div>
+
+          <div>
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i> Dosis & Aturan Pakai
+            </h3>
+            <p id="modalDosis" class="text-slate-600 text-sm italic mt-1">-</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Stok Tersedia</p>
+            <p id="modalStok" class="text-slate-700 font-bold italic">0 Unit</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-4">
+        <button onclick="tutupModal()" class="flex-1 py-3 text-slate-500 font-bold hover:text-slate-700 transition">Tutup</button>
+        <a id="btnBeliWA" href="#" class="flex-[2] bg-emerald-600 text-white py-3 rounded-xl font-bold text-center hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition">
+          Pesan Sekarang
+        </a>
+      </div>
+    </div>
+  </div>
 
   <a href="#beranda" title="beranda" class="fixed bottom-8 right-8 bg-emerald-600 text-white p-3 rounded-full shadow-2xl hover:-translate-y-2 transition duration-300">
     <i data-lucide="arrow-up"></i>

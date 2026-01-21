@@ -1,5 +1,5 @@
 <?php
-include 'admin/db.php';
+include 'admin/koneksi.php';
 session_start();
 
 if (isset($_POST['login'])) {
