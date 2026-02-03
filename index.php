@@ -140,10 +140,10 @@ while ($row = mysqli_fetch_assoc($query)) {
         <h3 class="text-xl font-bold mb-4">Apoteker Siaga</h3>
         <p class="text-emerald-100/70">Konsultasi gratis mengenai dosis dan aturan pakai langsung dengan ahlinya.</p>
       </div>
-      <div class="p-8 rounded-2xl bg-emerald-800/50 hover:bg-emerald-800 transition">
-        <i data-lucide="truck" class="w-12 h-12 mx-auto mb-6 text-emerald-400"></i>
-        <h3 class="text-xl font-bold mb-4">Antar Cepat</h3>
-        <p class="text-emerald-100/70">Layanan pengiriman area lokal agar obat sampai tepat waktu saat dibutuhkan.</p>
+      <div class="p-8 rounded-2xl bg-emerald-800/50 transition ">
+        <i data-lucide="truck" class="w-12 h-12 mx-auto mb-6 text-emerald-400 opacity-50"></i>
+        <h3 class="text-xl font-bold mb-4 opacity-50">Antar Cepat</h3>
+        <p class="text-emerald-100/70 opacity-50">Segera Hadir</p>
       </div>
     </div>
   </section>

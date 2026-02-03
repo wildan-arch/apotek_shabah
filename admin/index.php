@@ -19,6 +19,18 @@ $total_aset = $data_aset['total_aset'] ?? 0;
 
 // 4. Ambil Daftar Obat yang Stoknya Menipis untuk List
 $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE stok < 15 ORDER BY stok ASC");
+
+// 5. Hitung Obat Kadaluwarsa (dalam 90 hari)
+$query_exp_count = mysqli_query($conn, "SELECT COUNT(*) as total FROM obat WHERE tgl_kadaluwarsa <= DATE_ADD(CURDATE(), INTERVAL 90 DAY)");
+$data_exp_count = mysqli_fetch_assoc($query_exp_count);
+$total_exp_alert = $data_exp_count['total'];
+
+// 6. Ambil Daftar Obat Mendekati Kadaluwarsa
+$list_exp = mysqli_query($conn, "SELECT nama, tgl_kadaluwarsa FROM obat 
+                                 WHERE tgl_kadaluwarsa >= CURDATE() 
+                                 ORDER BY tgl_kadaluwarsa ASC LIMIT 5");
+
+
 ?>
 
 <!DOCTYPE html>
@@ -35,24 +47,15 @@ $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE st
 <body class="bg-gray-100 flex">
   <div class="w-64 h-screen bg-emerald-800 text-white p-6 sticky top-0">
     <h1 class="text-xl font-bold mb-8 italic">Apotek Shabah</h1>
-    <nav class="space-y-4">
-      <div class="text">
-        <span class="text-slate-600 text-sm font-medium bg-white px-1 py-1 rounded">
-          <i data-lucide="user" class="inline w-4 h-4 mr-1"></i>
-          <?php echo $_SESSION['admin_shabah']; ?>
-        </span>
-      </div>
-      <a href="index.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Dashboard</a>
-      <a href="manage-obat.php" class="block py-2 px-4 hover:bg-emerald-700 rounded transition">Kelola Stok</a>
-      <div class="flex items-center gap-4">
+    <?php $current_page = basename($_SERVER['PHP_SELF']); ?>
 
-        <a href="logout.php"
-          onclick="return confirm('Apakah Anda yakin ingin keluar?')"
-          class="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-300 font-bold text-sm">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          Logout
-        </a>
-      </div>
+    <nav class="space-y-4">
+      <a href="index.php" class="block py-2 px-4 <?= ($current_page == 'index.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Dashboard</a>
+      <a href="manage-obat.php" class="block py-2 px-4 <?= ($current_page == 'manage-obat.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Kelola Stok</a>
+      <a href="kasir.php" class="block py-2 px-4 <?= ($current_page == 'kasir.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Kasir</a>
+      <a href="riwayat-penjualan.php" class="block py-2 px-4 <?= ($current_page == 'riwayat-penjualan.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Riwayat</a>
+    </nav>
+    <a href="logout.php" class="block py-2 px-4 text-red-300">Logout</a>
     </nav>
   </div>
 
@@ -61,8 +64,28 @@ $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE st
       <h2 class="text-3xl font-bold text-gray-800">Ringkasan Apotek</h2>
       <p class="text-gray-500">Data real-time dari database MySQL.</p>
     </header>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="flex gap-2 mb-4">
+      <a href="export-excel.php" class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-200 transition flex items-center gap-2">
+        <i class="fas fa-file-excel"></i>
+        Export ke Excel
+      </a>
+      <a href="export-pdf.php" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-200 transition flex items-center gap-2">
+        <i class="fas fa-file-pdf"></i>
+        Export ke PDF
+      </a>
+      <button onclick="window.print()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200 transition flex items-center gap-2">
+        <i class="fas fa-print"></i>
+        Cetak Laporan
+      </button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
+        <p class="text-xs font-bold uppercase text-gray-400 mb-1">Hampir Kadaluwarsa</p>
+        <div class="flex items-center justify-between">
+          <h3 class="text-3xl font-bold text-gray-800"><?php echo $total_exp_alert; ?></h3>
+          <i class="fas fa-calendar-times text-orange-200 text-3xl"></i>
+        </div>
+      </div>
       <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
         <p class="text-xs font-bold uppercase text-gray-400 mb-1">Total Produk</p>
         <div class="flex items-center justify-between">
@@ -90,8 +113,32 @@ $list_rendah = mysqli_query($conn, "SELECT nama, stok, satuan FROM obat WHERE st
         </div>
       </div>
     </div>
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+        <i class="fas fa-history text-orange-600 mr-2"></i> Peringatan Kadaluwarsa
+      </h3>
+      <div class="space-y-3">
+        <?php if (mysqli_num_rows($list_exp) > 0): ?>
+          <?php while ($exp = mysqli_fetch_assoc($list_exp)):
+            $tgl_exp = new DateTime($exp['tgl_kadaluwarsa']);
+            $skrg = new DateTime();
+            $diff = $skrg->diff($tgl_exp)->days;
+          ?>
+            <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg border border-orange-100">
+              <div>
+                <span class="block font-medium text-gray-700"><?php echo $exp['nama']; ?></span>
+                <span class="text-[10px] text-gray-500 uppercase">Exp: <?php echo date('d M Y', strtotime($exp['tgl_kadaluwarsa'])); ?></span>
+              </div>
+              <span class="text-orange-600 font-bold text-xs"><?php echo $diff; ?> Hari Lagi</span>
+            </div>
+          <?php endwhile; ?>
+        <?php else: ?>
+          <p class="text-gray-400 text-sm italic">Tidak ada obat mendekati kadaluwarsa.</p>
+        <?php endif; ?>
+      </div>
+    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 mb-4 flex items-center"><i class="fas fa-list text-emerald-600 mr-2"></i> Daftar Re-stok Segera</h3>
         <div class="space-y-3">

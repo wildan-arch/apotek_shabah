@@ -1,26 +1,33 @@
-<!-- koneksi database -->
 <?php
 include 'koneksi.php';
 include 'auth.php';
 
-//  tangkap data dari form
-$id_obat = $_POST['id_obat'];
-$nama_obat = $_POST['nama_obat'];
-$kategori = $_POST['kategori'];
-$harga = $_POST['harga'];
-$stok = $_POST['stok'];
-$satuan = $_POST['satuan'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_POST['id_obat'];
+    $nama = mysqli_real_escape_string($conn, $_POST['nama_obat']);
+    $kategori = $_POST['kategori'];
+    $harga = $_POST['harga'];
+    $stok = $_POST['stok'];
+    $satuan = $_POST['satuan'];
+    $min_stok = $_POST['min_stok'];
+    $tgl_kadaluwarsa = $_POST['tgl_kadaluwarsa'];
 
-// update data ke database
-$query = "UPDATE obat SET nama='$nama_obat', kategori='$kategori', harga='$harga', stok='$stok', satuan='$satuan' WHERE id='$id_obat'";
-$hasil = mysqli_query($conn, $query);
+    $query = "UPDATE obat SET 
+                nama = '$nama', 
+                kategori = '$kategori', 
+                harga = '$harga', 
+                stok = '$stok', 
+                satuan = '$satuan', 
+                min_stok = '$min_stok', 
+                tgl_kadaluwarsa = '$tgl_kadaluwarsa' 
+              WHERE id = '$id'";
 
-// cek apakah query berhasil
-if ($hasil) {
-    echo "<script>
-          alert('Data Berhasil Diubah!');
-          window.location.href='manage-obat.php';
-        </script>";
-} else {
-    header("Location: manage-obat.php?pesan=update_failed");
+    if (mysqli_query($conn, $query)) {
+        echo "<script>
+                alert('Data berhasil diperbarui!');
+                window.location.href='manage-obat.php';
+              </script>";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 }

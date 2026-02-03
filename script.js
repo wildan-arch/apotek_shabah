@@ -18,6 +18,7 @@ function inisialisasiDatabase() {
 }
 
 // 2. Tampilkan Hasil Pencarian (Tetap sama, hanya penyesuaian parsing harga)
+// 2. Tampilkan Hasil Pencarian
 function renderHasil(hasil) {
   if (hasil.length === 0) {
     hasilContainer.innerHTML = '<p class="text-center text-red-500 py-10 col-span-full">Obat tidak ditemukan.</p>';
@@ -27,23 +28,34 @@ function renderHasil(hasil) {
   hasilContainer.innerHTML = hasil
     .map(
       (obat, index) => `
-        <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm hover:shadow-md transition text-left">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h4 class="font-bold text-emerald-900 text-lg">${obat.nama}</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase italic">${obat.kategori}</p>
-                    <p class="text-[11px] ${parseInt(obat.stok) < 10 ? "text-red-500" : "text-emerald-500"} font-semibold">Stok: ${obat.stok} ${obat.satuan}</p>
-                </div>
-                <p class="text-emerald-700 font-bold text-sm">Rp ${parseInt(obat.harga).toLocaleString("id-ID")}</p>
-            </div>
-            <div class="flex items-center gap-2 pt-4 border-t border-slate-50">
-                <input type="number" id="qty-${index}" min="1" value="1" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
-                <button onclick="tambahKeKeranjang('${obat.nama}', ${obat.harga}, 'qty-${index}', '${obat.satuan}')" class="bg-emerald-600 text-white p-2 rounded-xl hover:bg-emerald-700 transition">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    `,
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 text-left relative overflow-hidden group">
+            <div class="flex justify-between items-start mb-2">
+                <div class="pr-4">
+                    <h4 class="font-bold text-emerald-900 text-xl leading-tight mb-1">${obat.nama}</h4>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-bold uppercase tracking-wider">${obat.kategori}</span>
+                </div>
+                <p class="text-emerald-600 font-extrabold text-lg italic">Rp ${parseInt(obat.harga).toLocaleString("id-ID")}</p>
+            </div>
+
+            <div class="mb-6">
+                <p class="text-xs ${parseInt(obat.stok) < 10 ? "text-red-500" : "text-slate-400"} font-medium">
+                    Stok: <span class="font-bold">${obat.stok} ${obat.satuan}</span>
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-3 mt-auto">
+                <div class="relative flex-grow">
+                    <input type="number" id="qty-${index}" min="1" value="1" 
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:border-emerald-500 focus:bg-white transition-all">
+                </div>
+                
+                <button onclick="tambahKeKeranjang('${obat.nama}', ${obat.harga}, 'qty-${index}', '${obat.satuan}')" 
+                    class="bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:scale-110 active:scale-95 transition-all duration-200 shrink-0">
+                    <i data-lucide="plus" class="w-7 h-7"></i>
+                </button>
+            </div>
+        </div>
+    `,
     )
     .join("");
   lucide.createIcons();

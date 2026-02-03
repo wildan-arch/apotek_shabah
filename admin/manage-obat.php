@@ -4,25 +4,25 @@ include 'koneksi.php';
 include 'auth.php';
 
 // --- LOGIKA TAMBAH DATA ---
-// ambil data dari form tambah obat
+// --- LOGIKA TAMBAH DATA ---
 if (isset($_POST['tambah'])) {
   $nama = ucwords(strtolower($_POST['nama']));
   $kategori = $_POST['kategori'];
   $stok = $_POST['stok'];
   $harga = $_POST['harga'];
   $satuan = $_POST['satuan'];
+  $tgl_kadaluwarsa = $_POST['tgl_kadaluwarsa']; // Kolom baru
+  $min_stok = $_POST['min_stok']; // Kolom baru
 
-  // proses query tambah data
-  mysqli_query($conn, "INSERT INTO obat (nama, kategori, stok, harga, satuan) 
-                         VALUES ('$nama', '$kategori', '$stok', '$harga', '$satuan')");
+  // Sesuaikan nama kolom dengan database kamu
+  $sql = "INSERT INTO obat (nama, kategori, stok, harga, satuan, tgl_kadaluwarsa, min_stok) 
+          VALUES ('$nama', '$kategori', '$stok', '$harga', '$satuan', '$tgl_kadaluwarsa', '$min_stok')";
 
-  // memberikan notifikasi dan redirect
-  if (isset($_POST['tambah'])) {
-    // ... proses query ...
+  if (mysqli_query($conn, $sql)) {
     echo "<script>
-          alert('Data Berhasil Ditambahkan!');
-          window.location.href='manage-obat.php';
-        </script>";
+            alert('Data Berhasil Ditambahkan!');
+            window.location.href='manage-obat.php';
+          </script>";
     exit();
   }
 }
@@ -66,25 +66,15 @@ if (isset($_GET['cari'])) {
 <body class="bg-gray-100 flex">
   <div class="w-64 h-screen bg-emerald-800 text-white p-6 sticky top-0">
     <h1 class="text-xl font-bold mb-8 italic">Apotek Shabah</h1>
+    <?php $current_page = basename($_SERVER['PHP_SELF']); ?>
+
     <nav class="space-y-4">
-      <div class="text">
-        <span class="text-slate-600 text-sm font-medium bg-white px-1 py-1 rounded">
-          <i data-lucide="user" class="inline w-4 h-4 mr-1"></i>
-          <?php echo $_SESSION['admin_shabah']; ?>
-        </span>
-      </div>
-      <a href="index.php" class="block py-2 px-4 hover:bg-emerald-700 rounded">Dashboard</a>
-      <a href="manage-obat.php" class="block py-2 px-4 bg-emerald-900 rounded border-l-4 border-yellow-400">Kelola Stok</a>
-      <div class="flex items-center gap-4">
-
-
-        <a href="logout.php"
-          onclick="return confirm('Apakah Anda yakin ingin keluar?')"
-          class="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-300 font-bold text-sm">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          Logout
-        </a>
-      </div>
+      <a href="index.php" class="block py-2 px-4 <?= ($current_page == 'index.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Dashboard</a>
+      <a href="manage-obat.php" class="block py-2 px-4 <?= ($current_page == 'manage-obat.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Kelola Stok</a>
+      <a href="kasir.php" class="block py-2 px-4 <?= ($current_page == 'kasir.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Kasir</a>
+      <a href="riwayat-penjualan.php" class="block py-2 px-4 <?= ($current_page == 'riwayat-penjualan.php') ? 'bg-emerald-900 border-l-4 border-yellow-400' : 'hover:bg-emerald-700' ?> rounded">Riwayat</a>
+    </nav>
+    <a href="logout.php" class="block py-2 px-4 text-red-300">Logout</a>
     </nav>
   </div>
 
@@ -93,27 +83,33 @@ if (isset($_GET['cari'])) {
 
     <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
       <h3 class="font-bold mb-4 text-emerald-800">Tambah Obat Baru</h3>
-      <form action="manage-obat.php" method="POST" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <input type="text" name="nama" autocomplete="off" placeholder="Nama Obat" class="border p-2 rounded capitalize" required />
+      <form action="manage-obat.php" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" name="nama" placeholder="Nama Obat" class="border p-2 rounded capitalize" required />
+
         <select name="kategori" class="border p-2 rounded">
           <option>Obat Bebas</option>
-          <option>Obat Bebas Terbatas</option>
-          <option>Obat Makanan</option>
-          <option>Obat Minuman</option>
           <option>Obat Keras</option>
-          <option>Obat Herbal</option>
-          <option>Vitamin</option>
         </select>
-        <input type="number" name="stok" placeholder="Stok" class="border p-2 rounded" required />
+
+        <input type="number" name="stok" placeholder="Stok Awal" class="border p-2 rounded" required />
+
+        <input type="number" name="min_stok" placeholder="Min. Stok Alert" class="border p-2 rounded" value="5" required />
+
         <input type="number" name="harga" placeholder="Harga" class="border p-2 rounded" required />
-        <select id="satuan" name="satuan" class="border p-2 rounded">
+
+        <select name="satuan" class="border p-2 rounded">
           <option>Strip</option>
-          <option>Box</option>
           <option>Botol</option>
-          <option>Tablet</option>
-          <option>Pcs</option>
         </select>
-        <button type="submit" name="tambah" class="bg-emerald-600 text-white p-2 rounded font-bold hover:bg-emerald-700 md:col-span-5">Simpan ke Database</button>
+
+        <div class="flex flex-col">
+          <label class="text-xs text-gray-500 ml-1">Tanggal Kadaluwarsa</label>
+          <input type="date" name="tgl_kadaluwarsa" class="border p-2 rounded" required />
+        </div>
+
+        <button type="submit" name="tambah" class="bg-emerald-600 text-white p-2 rounded font-bold hover:bg-emerald-700 md:col-span-4">
+          Simpan ke Database
+        </button>
       </form>
     </div>
 
@@ -163,9 +159,13 @@ if (isset($_GET['cari'])) {
               <td class="p-4 font-bold text-gray-800"><?php echo $row['nama']; ?></td>
               <td class="p-4 text-gray-600"><?php echo $row['kategori']; ?></td>
               <td class="p-4">
-                <span class="px-2 py-1 rounded text-xs font-bold <?php echo ($row['stok'] < 15) ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'; ?>">
+                <span class="px-2 py-1 rounded text-xs font-bold <?php echo ($row['stok'] <= $row['min_stok']) ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'; ?>">
                   <?php echo $row['stok'] . " " . $row['satuan']; ?>
                 </span>
+
+                <div class="text-[10px] text-gray-400 mt-1">
+                  Exp: <?php echo date('d/m/Y', strtotime($row['tgl_kadaluwarsa'])); ?>
+                </div>
               </td>
               <td class="p-4 font-bold text-gray-700">
                 Rp <?php echo number_format($row['harga'], 0, ',', '.'); ?>
